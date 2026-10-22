@@ -7,10 +7,6 @@ without opening a panel or running `/usage`.
 This is an independent project. It is not affiliated with, sponsored by or endorsed by Anthropic.
 "Claude" and "Claude Code" are trademarks of Anthropic.
 
-```text
-5h 42% ▰▰▱▱▱ · 7d 59% ▰▰▰▱▱
-```
-
 <img src="docs/status-bar.png" alt="Status bar item showing 5h and 7d plan-limit percentages with thin gauges">
 
 Percentage first, then a thin gauge; the left value is the 5-hour session limit, the right value the 7-day weekly limit.
@@ -22,8 +18,8 @@ The details panel, opened by clicking the status bar item.
 - Status bar: the 5-hour and 7-day percentages, with a small gauge per window.
   Amber at 70 %, red at 90 %. A `~` means the numbers are older than they should be.
   A `!` means the last fetch failed.
-- Hover: reset countdowns and measured token counts.
-- Click (or run **Claude Usage: Show Details**): a panel with per-day and per-project
+- Hover: a short hint to click the item for the details.
+- Click (or run **Usage Meter: Show Details**): a panel with per-day and per-project
   token charts and a burn-rate estimate.
 
 ## How the percentages are obtained
@@ -102,9 +98,9 @@ rendered panel layout and the status-bar text helpers. Run it before every packa
 
 ## Commands
 
-- **Claude Usage: Show Details**: the per-day and per-project panel.
-- **Claude Usage: Refresh Now**: fetch and re-aggregate immediately.
-- **Claude Usage: Calibrate Budget From /usage**: derives a token budget from the percentage
+- **Usage Meter: Show Details**: the per-day and per-project panel.
+- **Usage Meter: Refresh Now**: fetch and re-aggregate immediately.
+- **Usage Meter: Calibrate Budget From /usage**: derives a token budget from the percentage
   `/usage` shows. Only needed for the fallback path when no cached percentages exist.
 
 ## Limits of this extension
