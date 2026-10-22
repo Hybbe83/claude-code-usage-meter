@@ -1,0 +1,12 @@
+# Build-time only: never ship these inside the extension.
+preflight.js
+*.vsix
+*.bak-*
+*.original.*
+verify-live.js
+deploy-live.js
+
+.github/**
+SECURITY.md
+.gitignore
+shim-worker.js

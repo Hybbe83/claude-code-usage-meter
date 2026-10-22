@@ -1,0 +1,8 @@
+node_modules/
+*.vsix
+*.bak-*
+*.original.*
+*.tmp
+.hot-backup-*/
+.DS_Store
+Thumbs.db

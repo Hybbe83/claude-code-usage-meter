@@ -1,0 +1,104 @@
+{
+  "name": "claude-code-usage-meter",
+  "displayName": "Usage Meter for Claude Code",
+  "description": "Shows Claude Code plan-limit percentages (5-hour and 7-day) and a burn-rate projection in the VS Code status bar.",
+  "version": "0.0.27",
+  "publisher": "<PUBLISHER-ID>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Hybbe83/claude-code-usage-meter.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Hybbe83/claude-code-usage-meter/issues"
+  },
+  "homepage": "https://github.com/Hybbe83/claude-code-usage-meter",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [
+    "onStartupFinished"
+  ],
+  "main": "./extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "claudeUsage.showDetails",
+        "title": "Claude Usage: Show Details"
+      },
+      {
+        "command": "claudeUsage.refresh",
+        "title": "Claude Usage: Refresh Now"
+      },
+      {
+        "command": "claudeUsage.calibrate",
+        "title": "Claude Usage: Calibrate Budget From /usage"
+      }
+    ],
+    "configuration": {
+      "title": "Claude Usage",
+      "properties": {
+        "claudeUsage.refreshSeconds": {
+          "type": "number",
+          "default": 15,
+          "minimum": 5,
+          "description": "How often to re-aggregate transcripts."
+        },
+        "claudeUsage.pollSeconds": {
+          "type": "number",
+          "default": 120,
+          "minimum": 30,
+          "description": "How often to re-fetch the real plan-limit percentages from GET /api/oauth/usage using your Claude Code OAuth token. The result is shared between VS Code windows, so this is the total request rate, not per window."
+        },
+        "claudeUsage.windowDays": {
+          "type": "number",
+          "default": 7,
+          "minimum": 1,
+          "maximum": 8,
+          "description": "Rolling window in days for the 'week' figure. Rows older than 8 days are pruned from the cache, so values above 8 are not retained."
+        },
+        "claudeUsage.weekTokenBudget": {
+          "type": "number",
+          "default": 0,
+          "description": "Token budget for the weekly window. When > 0 the status bar shows a percent bar. Run 'Claude Usage: Calibrate Budget From /usage' to derive it instead of guessing."
+        },
+        "claudeUsage.sessionTokenBudget": {
+          "type": "number",
+          "default": 0,
+          "description": "Token budget for the rolling session window. When > 0 the status bar shows a percent bar."
+        },
+        "claudeUsage.sessionWindowHours": {
+          "type": "number",
+          "default": 5,
+          "minimum": 1,
+          "maximum": 192,
+          "description": "Length of the rolling 'session' window in hours. Anthropic's session limit resets on a 5-hour rolling window, so the session figure spans every session in the last N hours, not just this conversation."
+        },
+        "claudeUsage.showBars": {
+          "type": "boolean",
+          "default": true,
+          "description": "Draw a block gauge next to each percentage in the status bar."
+        },
+        "claudeUsage.barWidth": {
+          "type": "number",
+          "default": 5,
+          "minimum": 3,
+          "maximum": 20,
+          "description": "Number of cells in the status bar gauges."
+        },
+        "claudeUsage.alignment": {
+          "type": "string",
+          "enum": [
+            "left",
+            "right"
+          ],
+          "default": "right",
+          "description": "Status bar side. Reload the window after changing."
+        }
+      }
+    }
+  }
+}
