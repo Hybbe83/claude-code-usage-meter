@@ -11,6 +11,8 @@ This is an independent project. It is not affiliated with, sponsored by or endor
 5h 42% ▰▰▱▱▱ · 7d 59% ▰▰▰▱▱
 ```
 
+<img src="docs/status-bar.png" alt="Status bar item showing 5h and 7d plan-limit percentages with thin gauges">
+
 Percentage first, then a thin gauge; the left value is the 5-hour session limit, the right value the 7-day weekly limit.
 
 <img src="docs/panel.png" alt="Details panel: session and weekly limits, burn rate, per-day usage" width="360">
