@@ -14,6 +14,9 @@ $(pulse) 5h 42% ▰▰▱▱▱ · 7d 59% ▰▰▰▱▱
 ![Status bar: 5h and 7d plan-limit percentages](docs/status-bar.png)
 The status bar item (layout shown is from an earlier version; the current version prints the percentage first, then a thin gauge).
 
+![Details panel: session and weekly limits, burn rate, per-day usage](docs/panel.png)
+The details panel opened by clicking the status bar item.
+
 - Status bar: the 5-hour and 7-day percentages, with a small gauge per window.
   Amber at 70 %, red at 90 %. A `~` means the numbers are older than they should be.
   A `!` means the last fetch failed.
