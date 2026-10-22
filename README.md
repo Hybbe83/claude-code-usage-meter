@@ -70,7 +70,7 @@ Marketplace publisher exists. Set it to that publisher's ID, then build the VSIX
 npm install -g @vscode/vsce
 node preflight.js
 vsce package
-code --install-extension claude-code-usage-meter-0.0.27.vsix
+code --install-extension claude-code-usage-meter-0.0.28.vsix
 ```
 
 `vsce package` will refuse to run while the placeholder is still in place.

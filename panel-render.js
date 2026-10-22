@@ -12,7 +12,7 @@
 //
 // Version of THIS file. preflight.js asserts it equals package.json's version,
 // so it cannot drift; the panel footer and the beacon both report it.
-const RENDERER_VERSION = '0.0.27';
+const RENDERER_VERSION = '0.0.28';
 
 const fs = require('node:fs');
 const os = require('node:os');
@@ -647,74 +647,19 @@ function weekListMd(data) {
 // The tooltip body. The caller wraps it in a MarkdownString. `stale` is accepted for
 // the caller's signature only: the page shows no stale flag, so the hover shows none.
 function tooltip(r, c, stale) {
+  // Owner decision 2026-10-22: the hover is only the title and the click line. The one
+  // exception is a single warning line, blocked first, else the age line when stale.
+  void c;
   const u = r.util;
-  const m = meterData(r, c);
-  const wsData = weekSegments(u ? u.weekSessions : null);
-  const blocks = [];
-
-  // 0. Notices first, in the wording the 0.0.26 tooltip used: blocked, then stale.
+  const blocks = ['**Usage Meter for Claude Code**'];
   if (u && u.blocked) {
     const retry = durationTo(new Date(u.blocked.retryAtMs).toISOString()) || 'a moment';
     blocks.push(`⚠ ${blockedWhy(u.blocked)}; ${u.blocked.consecutive} failed in a row, next try in ${retry}`);
-  }
-  if (stale && u && Number.isFinite(u.ageMs)) {
+  } else if (stale && u && Number.isFinite(u.ageMs)) {
     blocks.push(`numbers are ${Math.round(u.ageMs / 60000)} minutes old`);
   }
-
-  // 1. Session limit (the page's first meter)
-  blocks.push(`**Session limit** — ${pctText(m.sessionPct)}`);
-  if (m.sessionPct !== null && m.sessionPct !== undefined) blocks.push(thinGauge(m.sessionPct, BAR_CELLS));
-  blocks.push(m.sessionSub);
-
-  // 2. Weekly limit (the page's second meter, split by session when there is data)
-  blocks.push(`**Weekly limit** — ${pctText(m.weekPct)}`);
-  if (wsData) {
-    blocks.push(weekBarMd(wsData));
-    blocks.push(m.weekSub);
-    blocks.push(`Sessions this week (${wsData.sessions.length}):\n\n${weekListMd(wsData)}`);
-    blocks.push(
-      'Shares are approximate, within ±1 point, because the weekly percentage is a whole number. Sessions are only tracked while VS Code is open.'
-    );
-  } else {
-    if (m.weekPct !== null && m.weekPct !== undefined) blocks.push(thinGauge(m.weekPct, BAR_CELLS));
-    blocks.push(m.weekSub);
-  }
-
-  // 3. Source line under the meters (its blocked notice is already at the top)
-  blocks.push(sourceSentence(r));
-
-  // 4. Burn rate: the verdict table, each row's inputs (the page shows them in the Time
-  //    cell's title), then the estimate note.
-  if (u && u.burn) {
-    const stamps = {
-      Session: clockStamp(u.session && u.session.resetsAt),
-      Weekly: resetStamp(u.week && u.week.resetsAt),
-    };
-    const rows = [];
-    const inputs = [];
-    for (const [label, x] of [
-      ['Session', u.burn.five],
-      ['Weekly', u.burn.seven],
-    ]) {
-      if (!x) continue;
-      const f = burnFacts(x);
-      const stamp = stamps[label];
-      rows.push(`| ${label}${stamp ? ' ' + stamp : ''} | ${f.rate} | ${f.time} | ${trafficLightMd(x.verdict)} ${f.note} |`);
-      inputs.push(`- ${label}: full in **${f.fullText}** · resets in ${f.resetText}`);
-    }
-    blocks.push(`**Burn rate**\n\n| Window | Rate | Time | Verdict |\n|---|--:|--:|---|\n${rows.join('\n')}`);
-    blocks.push(inputs.join('\n'));
-    blocks.push(
-      '_How the rate is estimated:_ rate is a least-squares fit over recent polls, not the last two readings, because burn is bursty and the percentages are integers. Samples are confined to the current window, so a reset never enters the fit. ⚠ The 5h window appears to be _rolling_, meaning old usage ages out continuously; if so these projections are pessimistic, because they assume nothing ages out while you keep working. The weekly row assumes at least 9 hours of idle time every day: the rate is measured per active hour and the time to full is stretched by 24/15, so it does not pretend you work around the clock. Time is the time to full minus the time to reset; a negative value means you reach the cap before the reset.'
-    );
-  }
-
-  // 5. Stat cards. The 7d token count is already the weekly meter's sub-line, so it is
-  //    not repeated here.
-  blocks.push(
-    `**this chat** ${fmt(r.sessionTotal)} · **${c.windowDays}d output** ${fmt(r.week.output)} · **live context** ${fmt(r.ctx)}`
-  );
-  return blocks.join('\n\n') + '\n';
+  blocks.push('Click to open the details ⌄⌄⌄');
+  return blocks.join('\n\n');
 }
 
 module.exports = {

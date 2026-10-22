@@ -9,4 +9,3 @@ deploy-live.js
 .github/**
 SECURITY.md
 .gitignore
-shim-worker.js

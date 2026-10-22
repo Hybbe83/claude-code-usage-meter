@@ -2,7 +2,7 @@
   "name": "claude-code-usage-meter",
   "displayName": "Usage Meter for Claude Code",
   "description": "Shows Claude Code plan-limit percentages (5-hour and 7-day) and a burn-rate projection in the VS Code status bar.",
-  "version": "0.0.27",
+  "version": "0.0.28",
   "publisher": "<PUBLISHER-ID>",
   "license": "MIT",
   "repository": {
@@ -27,15 +27,15 @@
     "commands": [
       {
         "command": "claudeUsage.showDetails",
-        "title": "Claude Usage: Show Details"
+        "title": "Usage Meter: Show Details"
       },
       {
         "command": "claudeUsage.refresh",
-        "title": "Claude Usage: Refresh Now"
+        "title": "Usage Meter: Refresh Now"
       },
       {
         "command": "claudeUsage.calibrate",
-        "title": "Claude Usage: Calibrate Budget From /usage"
+        "title": "Usage Meter: Calibrate Budget From /usage"
       }
     ],
     "configuration": {

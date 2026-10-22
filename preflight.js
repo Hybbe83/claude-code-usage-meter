@@ -465,9 +465,7 @@ const tipSpanFull = R.spanText(70.2 * tipH);
 const tipSpanReset = R.spanText(128.15 * tipH);
 const tipMd = R.tooltip(tipRow, cfg, false);
 const tipCell = R.burnSectionHtml(tipRow);
-if (!tipMd.includes(`full in **${tipSpanFull}**`)) fail(`tooltip burn line lacks "full in **${tipSpanFull}**"`);
-if (!tipMd.includes(`resets in ${tipSpanReset}`)) fail(`tooltip burn line lacks "resets in ${tipSpanReset}"`);
-if (tipMd.includes('full in **3d**')) fail('tooltip burn line still uses whole-day rounding');
+if (tipMd.includes('full in') || tipMd.includes('resets in')) fail('hover must carry no burn line (owner 2026-10-22)');
 if (!tipCell.includes(`title="Full in ${tipSpanFull} · resets in ${tipSpanReset}"`)) {
   fail('Time-cell title does not carry the same span strings as the tooltip');
 }
@@ -525,68 +523,24 @@ console.log(
 );
 
 console.log('panel order:', order.join(' -> '));
-// 15. Hover tooltip (owner 2026-10-22). The hover shows the page's sections, in the
-//     page's order, cut just before 'Per day'. Fixture: the bundled weekly-sessions
-//     output from section 11, so the segmented bar and the session list are exercised.
-const hoverSample = {
-  ...sample,
-  util: {
-    ...sample.util,
-    week: { pct: ciWs.totalPct },
-    weekSessions: ciWs,
-    burn: { five: burn('tight'), seven: tipSeven },
-  },
-};
-const hoverMd = R.tooltip(hoverSample, cfg, false);
-// (a) the verdict table, with the four headers the page's burn table has
-if (!hoverMd.includes('| Window | Rate | Time | Verdict |')) fail('hover tooltip lacks the Window / Rate / Time / Verdict table header');
-// (b) nothing from 'Per day' downward
-if (/per day/i.test(hoverMd)) fail('hover tooltip contains "Per day" text; it must stop before that section');
-// (c) section order matches the page's order up to the cut
-const hoverPairs = [
-  ['Session limit', '**Session limit**'],
-  ['Weekly limit', '**Weekly limit**'],
-  ['Burn rate', '**Burn rate**'],
-  ['this chat', '**this chat**'],
-];
-const pageHoverHtml = R.detailsHtml(hoverSample, cfg, '0.0.0');
-const pageAtLabel = (s) => pageHoverHtml.indexOf(s);
-const hoverAtLabel = (s) => hoverMd.indexOf(s);
-const pageCut = pageAtLabel('Per day');
-if (pageCut < 0) fail('page has no "Per day" heading to cut the hover at');
-if (hoverPairs.some(([, h]) => hoverAtLabel(h) < 0)) {
-  fail('hover tooltip is missing a section: ' + hoverPairs.filter(([, h]) => hoverAtLabel(h) < 0).map(([, h]) => h).join(', '));
-}
-const hoverSeq = hoverPairs
-  .slice()
-  .sort((a, b) => hoverAtLabel(a[1]) - hoverAtLabel(b[1]))
-  .map(([p]) => p);
-const pageSeq = hoverPairs
-  .filter(([p]) => pageAtLabel(p) >= 0 && pageAtLabel(p) < pageCut)
-  .sort((a, b) => pageAtLabel(a[0]) - pageAtLabel(b[0]))
-  .map(([p]) => p);
-if (hoverSeq.join(' -> ') !== pageSeq.join(' -> ')) {
-  fail(`hover order "${hoverSeq.join(' -> ')}" differs from page order "${pageSeq.join(' -> ')}"`);
-}
-// (d) notices: blocked 429 shows its notice first; a healthy window shows none;
-//     stale shows the minutes line. The old wording is kept.
-const blockedHover = R.tooltip(
+// 15. Hover tooltip (owner decision 2026-10-22): the title and the click line only.
+//     A single warning line sits between them when blocked or stale. Nothing else.
+const hoverSample = { ...sample, util: { ...sample.util, burn: { five: burn('tight'), seven: tipSeven } } };
+const healthyTip = R.tooltip(hoverSample, cfg, false);
+const HEALTHY_TIP = '**Usage Meter for Claude Code**\n\nClick to open the details ⌄⌄⌄';
+if (healthyTip !== HEALTHY_TIP) fail('healthy hover is not exactly the title and click line: ' + JSON.stringify(healthyTip));
+if (/Per day|\|/.test(healthyTip) || /^#/m.test(healthyTip)) fail('healthy hover carries a table, a heading or "Per day"');
+const blockedTip = R.tooltip(
   { ...hoverSample, util: { ...hoverSample.util, blocked: { status: 429, consecutive: 3, retryAtMs: Date.now() + 600000, reason: 'http-429' } } },
   cfg,
   false
 );
-if (!blockedHover.startsWith('⚠ rate limited by the API; 3 failed in a row, next try in ')) {
-  fail('blocked 429 hover does not open with the rate-limited notice: ' + blockedHover.split('\n')[0]);
-}
-const healthyHover = R.tooltip(hoverSample, cfg, false);
-if (healthyHover.startsWith('⚠') || healthyHover.includes('failed in a row') || healthyHover.includes('minutes old')) {
-  fail('healthy hover shows a notice it should not');
-}
-const staleHover = R.tooltip(hoverSample, cfg, true);
-if (!staleHover.startsWith('numbers are ') || !staleHover.includes('minutes old')) {
-  fail('stale hover lacks the "numbers are N minutes old" line: ' + staleHover.split('\n')[0]);
-}
-console.log('notices: blocked -> "' + blockedHover.split('\n')[0] + '"; healthy -> no notice; stale -> "' + staleHover.split('\n')[0] + '"');
-console.log(`hover tooltip: ${hoverSeq.join(' -> ')}; no "Per day"; verdict table headers present`);
+if (!blockedTip.includes('⚠ rate limited by the API; 3 failed in a row, next try in ')) fail('blocked 429 hover lacks the rate-limited warning');
+if (!blockedTip.endsWith('Click to open the details ⌄⌄⌄')) fail('blocked 429 hover lacks the click line at the end');
+if (blockedTip.indexOf('⚠') > blockedTip.indexOf('Click to open')) fail('warning must sit above the click line');
+const staleTip = R.tooltip(hoverSample, cfg, true);
+if (!/numbers are \d+ minutes old/.test(staleTip)) fail('stale hover lacks the "numbers are N minutes old" line');
+if (!staleTip.endsWith('Click to open the details ⌄⌄⌄')) fail('stale hover lacks the click line at the end');
+console.log('hover: healthy = title + click line; blocked first line = "' + blockedTip.split('\n')[0] + '"; stale = "' + staleTip.split('\n')[0] + '"');
 
 console.log('PREFLIGHT OK');
