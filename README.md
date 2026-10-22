@@ -11,7 +11,8 @@ This is an independent project. It is not affiliated with, sponsored by or endor
 $(pulse) 5h 42% ▰▰▱▱▱ · 7d 59% ▰▰▰▱▱
 ```
 
-<!-- SCREENSHOT PLACEHOLDER: add docs/screenshot.png (status bar and details panel) before publishing. -->
+![Status bar: 5h and 7d plan-limit percentages](docs/status-bar.png)
+The status bar item (layout shown is from an earlier version; the current version prints the percentage first, then a thin gauge).
 
 - Status bar: the 5-hour and 7-day percentages, with a small gauge per window.
   Amber at 70 %, red at 90 %. A `~` means the numbers are older than they should be.
