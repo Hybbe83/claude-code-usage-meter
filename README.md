@@ -65,17 +65,11 @@ They are two different measurements and do not track each other linearly.
 
 Requires VS Code 1.85 or newer, Node.js (for building), and Claude Code signed in on this machine.
 
-The `publisher` field in `package.json` is a placeholder (`<PUBLISHER-ID>`) until a Visual Studio
-Marketplace publisher exists. Set it to that publisher's ID, then build the VSIX from source:
+1. Download `claude-code-usage-meter-0.0.28.vsix` from this repository's Releases page.
+2. Install it with `code --install-extension claude-code-usage-meter-0.0.28.vsix`, or in the
+   Extensions view choose `...` > `Install from VSIX...`.
 
-```
-npm install -g @vscode/vsce
-node preflight.js
-vsce package
-code --install-extension claude-code-usage-meter-0.0.28.vsix
-```
-
-`vsce package` will refuse to run while the placeholder is still in place.
+The extension is not on the Visual Studio Marketplace yet.
 
 Then reload the VS Code window. Set `claudeUsage.alignment` and reload again if you want the item on the left.
 

@@ -3,7 +3,7 @@
   "displayName": "Usage Meter for Claude Code",
   "description": "Shows Claude Code plan-limit percentages (5-hour and 7-day) and a burn-rate projection in the VS Code status bar.",
   "version": "0.0.28",
-  "publisher": "<PUBLISHER-ID>",
+  "publisher": "rivwise",
   "license": "MIT",
   "repository": {
     "type": "git",
